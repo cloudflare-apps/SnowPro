@@ -205,7 +205,28 @@
     }, 1000)*/
   }, 1000);
 
+  var lastFrame;
+  var startupTime = +new Date;
+  var slowFrameCount = 0;
   function update(){
+    if ((new Date - startupTime) > 2000 && lastFrame){
+      var frameTime = new Date - lastFrame;
+
+      if (frameTime > 32){
+        slowFrameCount++;
+      } else {
+        slowFrameCount = 0;
+      }
+
+      if (slowFrameCount > 5 && FLAKES > 8){
+        FLAKES = Math.floor(FLAKES - FLAKES / 3);
+      } else if (frameTime < 18 && FLAKES < +options.density){
+        FLAKES += FLAKES / 2;
+      }
+    }
+
+    lastFrame = +new Date;
+
     clear()
 
     if (!show)
