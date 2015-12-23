@@ -7,3 +7,7 @@
   transition: opacity 500ms ease;
   -webkit-transition: opacity 500ms ease;
 }
+
+.eager-snow-canvas.eager-snow-scrolling {
+  opacity: 0 !important;
+}

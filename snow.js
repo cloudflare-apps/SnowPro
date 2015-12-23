@@ -289,6 +289,9 @@
     if (!shown)
       return;
 
+    if (pause)
+      return;
+
     clear()
 
     var drawnThisFrame = 0;
@@ -323,12 +326,32 @@
     requestAnimationFrame(update);
   }
 
+  var scrollHidden = false;
+  var pause = false;
+  var pauseTimeout;
+
   window.addEventListener('scroll', function(e){
     if (e.target === document){
-      if (document.body.scrollTop === 0 && !shown){
+      if (!pause)
+        canvas.className = 'eager-snow-canvas eager-snow-scrolling';
+
+      pause = true;
+
+      if (pauseTimeout)
+        clearTimeout(pauseTimeout);
+
+      pauseTimeout = setTimeout(function(){
+        pause = false;
+        canvas.className = 'eager-snow-canvas';
+        update();
+      }, 100);
+
+      if (document.body.scrollTop === 0 && !shown && scrollHidden){
         show();
-      } else if (document.body.scrollTop !== 0 && shown){
+        scrollHidden = false;
+      } else if (document.body.scrollTop !== 0 && shown && options.hideOnScroll){
         hide();
+        scrollHidden = true;
       }
     }
   });

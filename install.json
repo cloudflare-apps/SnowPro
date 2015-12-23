@@ -129,7 +129,7 @@
       "hideOnScroll": {
         "order": 60,
         "type": "boolean",
-        "title": "Hide the snow when the user scrolls the page",
+        "title": "Hide the snow after the user scrolls the page",
         "default": false
       },
       "hideAfterTime": {
