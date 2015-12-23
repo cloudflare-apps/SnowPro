@@ -109,6 +109,7 @@
         "type": "string",
         "format": "date",
         "title": "Hide Before",
+        "description": "The snow will always be shown in the preview, but it will be hidden to your site’s visitors before this date.",
         "showIf": "hideBeforeToggle",
         "default": "12-24-2015"
       },
@@ -123,6 +124,7 @@
         "type": "string",
         "format": "date",
         "title": "Hide After",
+        "description": "The snow will always be shown in the preview, but it will be hidden to your site’s visitors after this date.",
         "showIf": "hideAfterToggle",
         "default": "1-1-2016"
       },
