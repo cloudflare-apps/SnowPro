@@ -73,7 +73,7 @@
       "accumulate": {
         "order": 30,
         "type": "boolean",
-        "title": "Accumulate snow on the bottom of the screen?",
+        "title": "Accumulate snow on the bottom of the screen",
         "default": true
       },
       "hideBeforeToggle": {
