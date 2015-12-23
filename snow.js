@@ -1,32 +1,36 @@
 (function(){
-  var FLAKES, wind, options, shown, windAngle, windStrength;
+  if (!window.addEventListener || document.documentElement.style.pointerEvents === undefined || !window.requestAnimationFrame)
+    return;
+
+  var FLAKES, wind, options, shown, windAngle, windStrength, prevStart, firstPass;
+
+  var IS_PREVIEW = INSTALL_ID === 'preview';
+
+  function updateFlakes() {
+    if (options)
+      FLAKES = Math.ceil((+options.density) * (1000 / W));
+  }
 
   function setOptions(opts) {
     options = opts;
 
-    FLAKES = +options.density;
+    updateFlakes();
 
-    windParts = options.wind.split('/');
-    wind = {
-      normal: +windParts[0],
-      gust: +windParts[1]
-    };
-
-    windStrength = wind.normal;
+    windStrength = +options.wind;
     windAngle = 0;
 
     var prevShown = shown;
 
     shown = true
     if (options.hideBeforeToggle && options.hideBefore){
-      if (new Date(options.hideBefore) > new Date()){
+      if (!IS_PREVIEW && new Date(options.hideBefore) > new Date()){
         clear();
 
         shown = false;
       }
     }
     if (options.hideAfterToggle && options.hideAfter){
-      if (new Date(options.hideAfter) < new Date()){
+      if (!IS_PREVIEW && new Date(options.hideAfter) < new Date()){
         clear();
 
         shown = false;
@@ -34,11 +38,18 @@
     }
 
     if (!prevShown && shown){
-      update();
-
-      canvas.style.opacity = 1;
-      accumCanvas.style.opacity = 1;
+      show();
     }
+
+    if (hideTimer)
+      clearTimeout(hideTimer);
+    if (options.hideAfterTime !== '-1'){
+      hideTimer = setTimeout(hide, options.hideAfterTime * 1000);
+    }
+
+    if (options.startFrom !== prevStart)
+      reset();
+    prevStart = options.startFrom;
   }
 
   function rnd2() {
@@ -66,18 +77,39 @@
 
     if (atTop){
       point.y = -point.r;
+    } else {
+      point.firstPass = true;
     }
 
     return point;
   }
 
-  var W = window.innerWidth;
-  var H = window.innerHeight;
+  var W, H, fixedEls, fixedAccu, accumulation, hideTimer;
+  function reset() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    updateFlakes();
+
+    canvas.width = W;
+    canvas.height = H;
+
+    accumCanvas.width = W;
+    accumCanvas.height = H;
+
+    particles = []
+    accumulation = {};
+
+    firstPass = true;
+
+    ctx.clearRect(0, 0, W, H);
+    accumCtx.clearRect(0, 0, W, H);
+
+    updateFixed();
+  }
 
   function createCanvas() {
     var canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
     canvas.className = 'eager-snow-canvas';
 
     return canvas;
@@ -88,29 +120,27 @@
 
   var accumCanvas = createCanvas();
   var accumCtx = accumCanvas.getContext("2d");
-  accumCanvas.style.zIndex = canvas.style.zIndex + 1;
 
-  var particles = [];
   var SHADOW = 5;
-
-  var fixedEls = [];
-  var fixedAccu = [];
-  var accumulation = {};
 
   var updateFixed = function() {
     fixedEls = [];
     fixedAccu = [];
     for (var j=0; j < document.body.children.length; j++){
       var node = document.body.children[j];
-      var position = getComputedStyle(node).position;
-      if (position === 'fixed'){
-        fixedEls.push(node.getBoundingClientRect());
-        fixedAccu.push({});
+      var style = getComputedStyle(node);
+
+      if (node.tagName != 'CANVAS' && style.position === 'fixed' && +style.opacity > 0.1 && style.display != 'none' && style.visibility == 'visible'){
+        var rect = node.getBoundingClientRect();
+        if (rect.top > 0){
+          fixedEls.push(rect);
+          fixedAccu.push({});
+        }
       }
     }
   }
 
-  updateFixed();
+  reset();
 
   function hide(){
     canvas.style.opacity = 0;
@@ -139,21 +169,26 @@
     }
 
     for (var i = 0; i < particles.length; i++){
+      if (options.startFrom === 'top' && particles[i].firstPass)
+        continue;
+
       var accuX = Math.floor(particles[i].x);
       var found = false;
 
-      for (var j=0; j < fixedEls.length; j++){
-        var pos = fixedEls[j];
+      if (options.accumulateFixed){
+        for (var j=0; j < fixedEls.length; j++){
+          var pos = fixedEls[j];
 
-        fixedAccu[j][accuX] |= 0;
+          fixedAccu[j][accuX] |= 0;
 
-        if (particles[i].x < (pos.left + pos.width) &&
-            particles[i].x > (pos.left + 2 * particles[i].r) &&
-            particles[i].y > pos.top - fixedAccu[j][accuX] &&
-            particles[i].y < (pos.top - fixedAccu[j][accuX] + 10) &&
-            particles[i].x - pos.left > fixedAccu[j][accuX] &&
-            (pos.left + pos.width) - particles[i].x > fixedAccu[j][accuX]) {
-          found = j;
+          if (particles[i].x < (pos.left + pos.width) &&
+              particles[i].x > (pos.left + 2 * particles[i].r) &&
+              particles[i].y > pos.top - fixedAccu[j][accuX] &&
+              particles[i].y < (pos.top - fixedAccu[j][accuX] + 10) &&
+              particles[i].x - pos.left > fixedAccu[j][accuX] &&
+              (pos.left + pos.width) - particles[i].x > fixedAccu[j][accuX]) {
+            found = j;
+          }
         }
       }
 
@@ -204,6 +239,12 @@
 
     for(var i = 0; i < FLAKES; i++){
       var p = particles[i];
+      if (!p)
+        continue;
+
+      if (p.firstPass && options.startFrom === 'top')
+        continue;
+
       if (p.x < 0)
         p.x = W;
       if (p.x > W)
@@ -221,11 +262,6 @@
       windAngle = 0
     else
       windAngle = Math.PI
-
-    windStrength = wind.gust;
-    /*setTimeout(function(){
-      windStrength = wind.normal;
-    }, 1000)*/
   }, 1000);
 
   var lastFrame;
@@ -255,15 +291,16 @@
 
     clear()
 
+    var drawnThisFrame = 0;
+
     for(var i = 0; i < FLAKES; i++){
       if (!particles[i]){
-        particles.push({
-          x: Math.random()*W,
-          y: Math.random()*H,
-          r: Math.random()*2+1,
-          a: randAngle(),
-          d: Math.random()*FLAKES
-        })
+        if (drawnThisFrame > 10 && options.startFrom === 'everywhere-gradual')
+          continue
+
+        drawnThisFrame++
+
+        particles.push(newParticle());
       }
 
       var p = particles[i];
@@ -277,6 +314,7 @@
         p.a = randAngle();
         p.x = Math.random() * W;
         p.y = -p.r;
+        p.firstPass = false;
       }
     }
 
@@ -295,8 +333,11 @@
     }
   });
 
+  window.addEventListener('resize', reset);
+
   document.body.appendChild(canvas)
   document.body.appendChild(accumCanvas)
+  accumCanvas.style.zIndex = (+getComputedStyle(canvas).zIndex) + 1;
 
   setOptions(INSTALL_OPTIONS);
 
