@@ -41,7 +41,7 @@
           "1000": "Extreme",
           "2500": "Blizzard"
         },
-        "default": "50"
+        "default": "200"
       },
       "wind": {
         "order": 10,
@@ -103,6 +103,30 @@
         "title": "Hide After",
         "showIf": "hideAfterToggle",
         "default": "1-1-2016"
+      },
+      "hideOnScroll": {
+        "order": 60,
+        "type": "boolean",
+        "title": "Hide when the user scrolls the page",
+        "default": false
+      },
+      "hideAfterTime": {
+        "order": 70,
+        "type": "string",
+        "title": "Hide the snow after the user has been on the page for some time",
+        "enum": [
+          "-1",
+          "5",
+          "10",
+          "30"
+        ],
+        "enumNames": {
+          "-1": "Never",
+          "5": "5 Seconds",
+          "10": "10 Seconds",
+          "30": "30 Seconds"
+        },
+        "default": "-1"
       }
     }
   }

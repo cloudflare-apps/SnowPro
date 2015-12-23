@@ -4,4 +4,6 @@
   left: 0;
   z-index: 130;
   pointer-events: none;
+  transition: opacity 300ms ease;
+  -webkit-transition: opacity 300ms ease;
 }

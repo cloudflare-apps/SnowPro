@@ -1,5 +1,5 @@
 (function(){
-  var FLAKES, wind, options, show, windAngle, windStrength;
+  var FLAKES, wind, options, shown, windAngle, windStrength;
 
   function setOptions(opts) {
     options = opts;
@@ -15,22 +15,30 @@
     windStrength = wind.normal;
     windAngle = 0;
 
-    var prevShown = show;
+    var prevShown = shown;
 
-    show = true
+    shown = true
     if (options.hideBeforeToggle && options.hideBefore){
       if (new Date(options.hideBefore) > new Date()){
-        show = false;
+        clear();
+
+        shown = false;
       }
     }
     if (options.hideAfterToggle && options.hideAfter){
       if (new Date(options.hideAfter) < new Date()){
-        show = false;
+        clear();
+
+        shown = false;
       }
     }
 
-    if (!prevShown && show)
+    if (!prevShown && shown){
       update();
+
+      canvas.style.opacity = 1;
+      accumCanvas.style.opacity = 1;
+    }
   }
 
   function rnd2() {
@@ -81,7 +89,6 @@
   var accumCanvas = createCanvas();
   var accumCtx = accumCanvas.getContext("2d");
   accumCanvas.style.zIndex = canvas.style.zIndex + 1;
-  accumCanvas.style.opacity = 1;
 
   var particles = [];
   var SHADOW = 5;
@@ -104,6 +111,22 @@
   }
 
   updateFixed();
+
+  function hide(){
+    canvas.style.opacity = 0;
+    accumCanvas.style.opacity = 0;
+
+    shown = false;
+  }
+
+  function show(){
+    canvas.style.opacity = 1;
+    accumCanvas.style.opacity = 1;
+
+    shown = true;
+
+    update();
+  }
 
   function clear(){
     ctx.clearRect(0, 0, W, H);
@@ -227,10 +250,10 @@
 
     lastFrame = +new Date;
 
-    clear()
-
-    if (!show)
+    if (!shown)
       return;
+
+    clear()
 
     for(var i = 0; i < FLAKES; i++){
       if (!particles[i]){
@@ -261,6 +284,16 @@
 
     requestAnimationFrame(update);
   }
+
+  window.addEventListener('scroll', function(e){
+    if (e.target === document){
+      if (document.body.scrollTop === 0 && !shown){
+        show();
+      } else if (document.body.scrollTop !== 0 && shown){
+        hide();
+      }
+    }
+  });
 
   document.body.appendChild(canvas)
   document.body.appendChild(accumCanvas)
