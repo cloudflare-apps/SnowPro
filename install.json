@@ -8,5 +8,102 @@
       "type": "script",
       "src": "snow.js"
     }]
+  },
+  "preview": {
+    "handlers": [
+      {
+        "options": ["*"],
+        "execute": "INSTALL_SCOPE.setOptions(INSTALL_OPTIONS)"
+      }
+    ]
+  },
+  "options": {
+    "properties": {
+      "density": {
+        "order": 0,
+        "type": "string",
+        "title": "Density",
+        "enum": [
+          "25",
+          "50",
+          "100",
+          "200",
+          "400",
+          "1000",
+          "2500"
+        ],
+        "enumNames": {
+          "25": "Very Light",
+          "50": "Light",
+          "100": "Medium",
+          "200": "Heavy",
+          "400": "Very Heavy",
+          "1000": "Extreme",
+          "2500": "Blizzard"
+        },
+        "default": "50"
+      },
+      "wind": {
+        "order": 10,
+        "type": "string",
+        "title": "Wind",
+        "enum": [
+          "0/0",
+          "0.1/0.1",
+          "0.3/0.3",
+          "0.1/1",
+          "0.1/2.5"
+        ],
+        "enumNames": {
+          "0/0": "No Wind",
+          "0.1/0.1": "Light",
+          "0.3/0.3": "Strong",
+          "0.1/1": "Gusty",
+          "0.1/2.5": "Strong and Gusty"
+        },
+        "default": "0.1/1"
+      },
+      "color": {
+        "order": 20,
+        "type": "string",
+        "format": "color",
+        "title": "Snow Color",
+        "default": "#FFFFFF"
+      },
+      "accumulate": {
+        "order": 30,
+        "type": "boolean",
+        "title": "Accumulate snow on the bottom of the screen?",
+        "default": true
+      },
+      "hideBeforeToggle": {
+        "order": 40,
+        "type": "boolean",
+        "title": "Hide the snow before a specific date",
+        "default": false
+      },
+      "hideBefore": {
+        "order": 45,
+        "type": "string",
+        "format": "date",
+        "title": "Hide Before",
+        "showIf": "hideBeforeToggle",
+        "default": "12-24-2015"
+      },
+      "hideAfterToggle": {
+        "order": 50,
+        "type": "boolean",
+        "title": "Hide the snow after a specific date",
+        "default": false
+      },
+      "hideAfter": {
+        "order": 55,
+        "type": "string",
+        "format": "date",
+        "title": "Hide After",
+        "showIf": "hideAfterToggle",
+        "default": "1-1-2016"
+      }
+    }
   }
 }
