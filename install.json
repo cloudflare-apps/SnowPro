@@ -22,7 +22,7 @@
       "density": {
         "order": 0,
         "type": "string",
-        "title": "Density",
+        "title": "Amount",
         "enum": [
           "25",
           "50",
@@ -48,20 +48,20 @@
         "type": "string",
         "title": "Wind",
         "enum": [
-          "0/0",
-          "0.1/0.1",
-          "0.3/0.3",
-          "0.1/1",
-          "0.1/2.5"
+          "0",
+          "0.1",
+          "0.3",
+          "1",
+          "2.5"
         ],
         "enumNames": {
-          "0/0": "No Wind",
-          "0.1/0.1": "Light",
-          "0.3/0.3": "Strong",
-          "0.1/1": "Gusty",
-          "0.1/2.5": "Strong and Gusty"
+          "0": "No Wind",
+          "0.1": "Light",
+          "0.3": "Strong",
+          "1": "Gusty",
+          "2.5": "Strong and Gusty"
         },
-        "default": "0.1/1"
+        "default": "1"
       },
       "color": {
         "order": 20,
@@ -70,10 +70,32 @@
         "title": "Snow Color",
         "default": "#FFFFFF"
       },
+      "startFrom": {
+        "order": 25,
+        "type": "string",
+        "title": "Start snow",
+        "enum": [
+          "top",
+          "everywhere",
+          "everywhere-gradual"
+        ],
+        "enumNames": {
+          "top": "From the top of the page",
+          "everywhere": "All over the page",
+          "everywhere-gradual": "All over the page, gradually appearing"
+        },
+        "default": "everywhere"
+      },
       "accumulate": {
         "order": 30,
         "type": "boolean",
-        "title": "Accumulate snow on the bottom of the screen?",
+        "title": "Accumulate snow on the bottom of the screen",
+        "default": true
+      },
+      "accumulateFixed": {
+        "order": 35,
+        "type": "boolean",
+        "title": "Accumulate snow on other elements on the page",
         "default": true
       },
       "hideBeforeToggle": {
@@ -107,7 +129,7 @@
       "hideOnScroll": {
         "order": 60,
         "type": "boolean",
-        "title": "Hide when the user scrolls the page",
+        "title": "Hide the snow when the user scrolls the page",
         "default": false
       },
       "hideAfterTime": {
