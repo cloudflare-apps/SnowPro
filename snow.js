@@ -331,6 +331,16 @@
   var pause = false;
   var pauseTimeout;
 
+  function updateScroll(){
+    if (document.body.scrollTop === 0 && !shown && scrollHidden){
+      show();
+      scrollHidden = false;
+    } else if (document.body.scrollTop !== 0 && shown && (options.hideOnScroll || window.orientation)){
+      hide();
+      scrollHidden = true;
+    }
+  }
+
   window.addEventListener('scroll', function(e){
     if (e.target === document){
       if (!pause)
@@ -347,17 +357,13 @@
         update();
       }, 100);
 
-      if (document.body.scrollTop === 0 && !shown && scrollHidden){
-        show();
-        scrollHidden = false;
-      } else if (document.body.scrollTop !== 0 && shown && (options.hideOnScroll || window.orientation)){
-        hide();
-        scrollHidden = true;
-      }
+      updateScroll();
     }
   });
 
   window.addEventListener('resize', reset);
+
+  updateScroll();
 
   document.body.appendChild(canvas)
   document.body.appendChild(accumCanvas)
