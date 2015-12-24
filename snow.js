@@ -106,6 +106,7 @@
     accumCtx.clearRect(0, 0, W, H);
 
     updateFixed();
+    setTimeout(updateFixed, 0);
   }
 
   function createCanvas() {
