@@ -162,7 +162,7 @@
   function clear(){
     ctx.clearRect(0, 0, W, H);
 
-    if (!options.accumulate){
+    if (!options.accumulate || window.orientation){
       accumCtx.clearRect(0, 0, W, H);
       fixedAccu = [];
       accumulation = {};
