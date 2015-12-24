@@ -1,10 +1,12 @@
 (function(){
   if (!window.addEventListener || document.documentElement.style.pointerEvents === undefined || !window.requestAnimationFrame)
     return;
-
   var FLAKES, wind, options, shown, windAngle, windStrength, prevStart, firstPass;
 
   var IS_PREVIEW = INSTALL_ID === 'preview';
+
+  var userAgent = window.navigator.userAgent;
+  var MOBILE = (window.orientation || userAgent.match(/iPad/i) || userAgent.match(/iPhone/i))
 
   function updateFlakes() {
     if (options)
@@ -162,7 +164,7 @@
   function clear(){
     ctx.clearRect(0, 0, W, H);
 
-    if (!options.accumulate || window.orientation){
+    if (!options.accumulate || MOBILE){
       accumCtx.clearRect(0, 0, W, H);
       fixedAccu = [];
       accumulation = {};
@@ -335,7 +337,7 @@
     if (document.body.scrollTop === 0 && !shown && scrollHidden){
       show();
       scrollHidden = false;
-    } else if (document.body.scrollTop !== 0 && shown && (options.hideOnScroll || window.orientation)){
+    } else if (document.body.scrollTop !== 0 && shown && (options.hideOnScroll || MOBILE)){
       hide();
       scrollHidden = true;
     }
