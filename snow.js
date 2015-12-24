@@ -349,7 +349,7 @@
       if (document.body.scrollTop === 0 && !shown && scrollHidden){
         show();
         scrollHidden = false;
-      } else if (document.body.scrollTop !== 0 && shown && options.hideOnScroll){
+      } else if (document.body.scrollTop !== 0 && shown && (options.hideOnScroll || window.orientation)){
         hide();
         scrollHidden = true;
       }
