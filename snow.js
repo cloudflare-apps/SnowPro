@@ -1,6 +1,7 @@
 (function(){
   if (!window.addEventListener || document.documentElement.style.pointerEvents === undefined || !window.requestAnimationFrame)
     return;
+
   var FLAKES, wind, options, shown, windAngle, windStrength, prevStart, firstPass;
 
   var IS_PREVIEW = INSTALL_ID === 'preview';
@@ -62,6 +63,10 @@
     return rnd2() * (Math.PI / 4) + (Math.PI / 4) + (Math.PI / 8)
   }
 
+  function getColor() {
+    return options.colors[Math.floor(Math.random() * options.colors.length)];
+  }
+
   function hexToRGBA(hex, alpha) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
@@ -74,7 +79,8 @@
       x: Math.random()*W,
       y: Math.random()*H,
       r: Math.random()*2+1,
-      a: randAngle()
+      a: randAngle(),
+      color: hexToRGBA(getColor(), 0.5)
     };
 
     if (atTop){
@@ -218,8 +224,8 @@
       if (found !== false || (particles[i].y > innerHeight - accum[accuX] && accum[accuX] < 30)){
         var p = particles[i];
 
-        accumCtx.fillStyle = hexToRGBA(options.color, 0.5);
-        accumCtx.shadowColor = hexToRGBA(options.color, 0.5);
+        accumCtx.fillStyle = particles[i].color;
+        accumCtx.shadowColor = particles[i].color;
 
         accumCtx.shadowBlur = SHADOW;
         accumCtx.beginPath();
@@ -235,10 +241,14 @@
   }
 
   function draw(){
-    ctx.fillStyle = hexToRGBA(options.color, 0.5);
-    ctx.shadowColor = hexToRGBA(options.color, 0.5);
     ctx.shadowBlur = SHADOW;
-    ctx.beginPath();
+
+    particles.sort(function(a, b){
+      return a.color.localeCompare(b.color);
+    })
+
+    var lastColor;
+    var pathStarted = false;
 
     for(var i = 0; i < FLAKES; i++){
       var p = particles[i];
@@ -252,6 +262,18 @@
         p.x = W;
       if (p.x > W)
         p.x = 0;
+
+      if (p.color !== lastColor){
+        if (pathStarted)
+          ctx.fill();
+
+        ctx.beginPath();
+        pathStarted = true;
+
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        lastColor = p.color;
+      }
 
       ctx.moveTo(p.x, p.y);
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
@@ -274,13 +296,13 @@
     if ((new Date - startupTime) > 2000 && lastFrame){
       var frameTime = new Date - lastFrame;
 
-      if (frameTime > 32){
+      if (frameTime > 60){
         slowFrameCount++;
       } else {
         slowFrameCount = 0;
       }
 
-      if (slowFrameCount > 5 && FLAKES > 8){
+      if (slowFrameCount > 5 && FLAKES > 8 && options.autoScaleDensity){
         FLAKES = Math.floor(FLAKES - FLAKES / 3);
       } else if (frameTime < 18 && FLAKES < +options.density){
         FLAKES += FLAKES / 2;
@@ -320,6 +342,7 @@
         p.a = randAngle();
         p.x = Math.random() * W;
         p.y = -p.r;
+        p.color = hexToRGBA(getColor(), 0.5);
         p.firstPass = false;
       }
     }
@@ -345,19 +368,21 @@
 
   window.addEventListener('scroll', function(e){
     if (e.target === document){
-      if (!pause)
-        canvas.className = 'eager-snow-canvas eager-snow-scrolling';
+      if (options.pauseOnScroll){
+        if (!pause)
+          canvas.className = 'eager-snow-canvas eager-snow-scrolling';
 
-      pause = true;
+        pause = true;
 
-      if (pauseTimeout)
-        clearTimeout(pauseTimeout);
+        if (pauseTimeout)
+          clearTimeout(pauseTimeout);
 
-      pauseTimeout = setTimeout(function(){
-        pause = false;
-        canvas.className = 'eager-snow-canvas';
-        update();
-      }, 100);
+        pauseTimeout = setTimeout(function(){
+          pause = false;
+          canvas.className = 'eager-snow-canvas';
+          update();
+        }, 100);
+      }
 
       updateScroll();
     }

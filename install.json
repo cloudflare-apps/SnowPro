@@ -63,12 +63,17 @@
         },
         "default": "1"
       },
-      "color": {
+      "colors": {
         "order": 20,
-        "type": "string",
-        "format": "color",
-        "title": "Snow Color",
-        "default": "#FFFFFF"
+        "type": "array",
+        "title": "Snow Colors",
+        "default": ["#FFFFFF"],
+        "items": {
+          "type": "string",
+          "format": "color",
+          "title": "Color",
+          "default": "#FFFFFF"
+        }
       },
       "startFrom": {
         "order": 25,
@@ -151,6 +156,18 @@
           "30": "30 Seconds"
         },
         "default": "-1"
+      },
+      "pauseOnScroll": {
+        "order": 80,
+        "type": "boolean",
+        "title": "Pause on scroll to improve performance",
+        "default": false
+      },
+      "autoScaleDensity": {
+        "order": 90,
+        "type": "boolean",
+        "title": "Automatically reduce snow amount on slower devices",
+        "default": false
       }
     }
   }
