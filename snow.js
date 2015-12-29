@@ -19,7 +19,7 @@
 
     updateFlakes();
 
-    windStrength = +options.wind;
+    windStrength = (+options.wind) || 0;
     windAngle = 0;
 
     var prevShown = shown;
