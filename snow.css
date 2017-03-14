@@ -1,4 +1,4 @@
-.eager-snow-canvas {
+.cloudflare-snow-canvas {
   position: fixed;
   top: 0;
   left: 0;
@@ -8,6 +8,6 @@
   -webkit-transition: opacity 500ms ease;
 }
 
-.eager-snow-canvas.eager-snow-scrolling {
+.cloudflare-snow-canvas.cloudflare-snow-scrolling {
   opacity: 0 !important;
 }

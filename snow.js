@@ -119,7 +119,7 @@
 
   function createCanvas() {
     var canvas = document.createElement('canvas');
-    canvas.className = 'eager-snow-canvas';
+    canvas.className = 'cloudflare-snow-canvas';
 
     return canvas;
   }
@@ -370,7 +370,7 @@
     if (e.target === document){
       if (options.pauseOnScroll){
         if (!pause)
-          canvas.className = 'eager-snow-canvas eager-snow-scrolling';
+          canvas.className = 'cloudflare-snow-canvas cloudflare-snow-scrolling';
 
         pause = true;
 
@@ -379,7 +379,7 @@
 
         pauseTimeout = setTimeout(function(){
           pause = false;
-          canvas.className = 'eager-snow-canvas';
+          canvas.className = 'cloudflare-snow-canvas';
           update();
         }, 100);
       }
